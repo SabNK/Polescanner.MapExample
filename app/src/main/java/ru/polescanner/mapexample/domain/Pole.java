@@ -27,17 +27,14 @@ public class Pole extends Entity{ //Опора
                    ConductorCount conductorsOnPole,
                    Point polePoint,
                    PoleType type,
-                   Map<PoleType.PolePosition, Conductor> poleLayout,
-                   Description poleAvatar,
-                   List<Description> poleDescriptions) {
+                   Map<PoleType.PolePosition, Conductor> poleLayout) {
         super(poleId, poleVersion);
         this.name = name;
         this.conductorCount = conductorsOnPole;
         this.point = polePoint;
         this.type = type;
         this.layout = poleLayout;
-        this.avatar = poleAvatar;
-        this.descriptions = poleDescriptions;
+
     }
 
     public static Pole register(String poleName,
@@ -46,8 +43,8 @@ public class Pole extends Entity{ //Опора
                                 double poleLon,
                                 double poleLat,
                                 double poleAcc,
-                                boolean isPoleEasyAccessible,
-                                Description polePicture){
+                                boolean isPoleEasyAccessible
+                                ){
         Point polePoint = new Point((float)poleLon, (float)poleLat,
                                     (float)poleAcc, isPoleEasyAccessible);
 
@@ -57,9 +54,8 @@ public class Pole extends Entity{ //Опора
                           new ConductorCount(conductorCount),
                           polePoint,
                           notNull(type, "Pole type has to be at least undetailed"),
-                          new HashMap<PoleType.PolePosition, Conductor>(),
-                          notNull(polePicture, "Single picture of pole should be provided"),
-                          new ArrayList<Description>());
+                          new HashMap<PoleType.PolePosition, Conductor>()
+                          );
         return p;
     }
 
@@ -96,11 +92,7 @@ public class Pole extends Entity{ //Опора
                                         cName,
                                         v,
                                         isConductorBare,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        new HashSet<Wire>());
+                                        null);
             layout.put(pp, c);
             result = true;
         };
@@ -130,12 +122,7 @@ public class Pole extends Entity{ //Опора
         return Span.registerSpan(this, other, conductorCount);
     }
 
-    public Feature addFeature(Feature.Type type, Span s, Description featurePicture){
-        Feature f = null;
-        if (s.isPoleIn(this))
-            f = Feature.registerAtPole(this, s, type, featurePicture);
-        return f;
-    }
+
 
     //ToDo may be to MediaPoviderImpl
     public static String convertImageToString(Bitmap image){
@@ -147,22 +134,6 @@ public class Pole extends Entity{ //Опора
             image_base64 = Base64.encodeToString(b, Base64.DEFAULT);
         }
         return image_base64;
-    }
-
-    @Override
-    public Description getAvatar() {
-        return null;
-    }
-
-    @Override
-    public List<Description> getDescriptions() {
-        return descriptions;
-    }
-
-    @Override
-    public void addDescription(Description desc) {
-        descriptions.add(desc);
-        incrementVersion();
     }
 
     public Point getPoint() {

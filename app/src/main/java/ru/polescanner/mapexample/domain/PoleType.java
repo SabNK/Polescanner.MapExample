@@ -6,26 +6,24 @@ import java.util.List;
 import java.util.Objects;
 
 //ToDo check implements Describable
-public class PoleType implements Describable{ //Тип опоры
+public class PoleType { //Тип опоры
 
     private final PoleTypeCode code; //Марка опоры
     private final Material material; //Материал стойки
     private final boolean isTension; //Анкер
     private final ConductorCount conductorCount; //Количество проводов
     private final List<PolePosition> defaultLayout; //
-    private final Description avatar; //Иконка
-    private final List<Description> descriptions; //Медиафайлы
+
 
     protected PoleType(PoleTypeCode code, Material material, boolean isTension,
-                       ConductorCount count, List<PolePosition> defaultLayout,
-                       Description avatar, List<Description> descriptions) {
+                       ConductorCount count, List<PolePosition> defaultLayout
+                       ) {
         this.code = code;
         this.material = material;
         this.isTension = isTension;
         this.conductorCount = count;
         this.defaultLayout = defaultLayout;
-        this.avatar = avatar;
-        this.descriptions = descriptions;
+
     }
     @Override
     public boolean equals(Object o) {
@@ -40,19 +38,6 @@ public class PoleType implements Describable{ //Тип опоры
     @Override
     public int hashCode() {
         return Objects.hash(code, material, isTension);
-    }
-    @Override
-    public void addDescription(Description desc) {
-        notNull(desc, "Media should be provided");
-        descriptions.add(desc);
-    }
-    @Override
-    public List<Description> getDescriptions() {
-        return descriptions;
-    }
-    @Override
-    public Description getAvatar(){
-        return this.avatar;
     }
 
     public String code() {
@@ -96,7 +81,8 @@ public class PoleType implements Describable{ //Тип опоры
     public enum Material {
         WOOD,
         STEEL,
-        CONCRETE
+        CONCRETE;
+
     }
 
     public enum PolePosition {

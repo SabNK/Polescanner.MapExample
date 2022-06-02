@@ -11,7 +11,6 @@ public class Span extends Entity{
     private Pole pole1;
     private Pole pole2;
     private ConductorCount count;
-    private Set<Feeder> feeders;
     //ToDo: add Set of Conductors
     private Set<Conductor> conductors;
 
@@ -20,13 +19,11 @@ public class Span extends Entity{
                    Pole pole1,
                    Pole pole2,
                    ConductorCount count,
-                   Set<Feeder> spanFeeders,
                    Set<Conductor> conductors) {
         super(spanId, spanVersion);
         this.pole1 = pole1;
         this.pole2 = pole2;
         this.count = count;
-        this.feeders = spanFeeders;
         this.conductors = conductors;
     }
     public static Span registerSpan(Pole pole1, Pole pole2, int conductorCount){
@@ -42,7 +39,6 @@ public class Span extends Entity{
                              pole1,
                              pole2,
                              new ConductorCount(conductorCount),
-                             new HashSet<Feeder>(),
                              new HashSet<Conductor>());
         return span;
     }

@@ -1,7 +1,8 @@
-package ru.polescanner.mapexample;
+package ru.polescanner.mapexample.ui;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -9,14 +10,24 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+
+import ru.polescanner.mapexample.R;
 import ru.polescanner.mapexample.databinding.ActivityMapsBinding;
+import ru.polescanner.mapexample.service.RepositoryPole;
+import ru.polescanner.mapexample.service.RepositorySpan;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
+    private Context context;
+
+    private ArrayList<Marker> pole_markers;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,5 +59,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
+
+    private void addMarkers(GoogleMap map){
+
     }
 }

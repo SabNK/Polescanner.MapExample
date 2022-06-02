@@ -1,5 +1,6 @@
 package ru.polescanner.mapexample.service;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,84 +11,71 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ru.polescanner.mapexample.R;
 import ru.polescanner.mapexample.domain.Pole;
 import ru.polescanner.mapexample.domain.PoleType;
+import ru.polescanner.mapexample.domain.Span;
 
 public class Controller {
     private RepositoryPole poleRepo;
     private RepositorySpan spanRepo;
+    private Context context;
 
-    public BitmapDescriptor getIcon(Pole p){
-        Map<Pair<PoleType.Material, Boolean>, BitmapDescriptor> icons;
-        BitmapDescriptor concrete_tension_below1kv_Icon;
-        BitmapDescriptor concrete_suspension_below1kv_Icon;
-        BitmapDescriptor steel_tension_below1kv_Icon;
-        BitmapDescriptor steel_suspension_below1kv_Icon;
-        BitmapDescriptor wood_tension_below1kv_Icon;
-        BitmapDescriptor wood_suspension_below1kv_Icon;
-        BitmapDescriptor markerIcon;
-
-        //задаю иконки для линий - цвет - напряжение,
-        // квадрат - бетон, круг - дерево, шестигранник - сталь
-        //  пустой - промка, закрашенный - анкер
-        int poleColor = Color.parseColor("#D81B60");
-        concrete_tension_below1kv_Icon = vectorToBitmap(R.drawable.ic_square, poleColor);
-        concrete_suspension_below1kv_Icon = vectorToBitmap(R.drawable.ic_square_outline,poleColor);
-        //ContextCompat.getColor(getApplicationContext(),R.color.colorBelow1kv));
-        steel_tension_below1kv_Icon = vectorToBitmap(R.drawable.ic_hexagon,poleColor);
-        steel_suspension_below1kv_Icon = vectorToBitmap(R.drawable.ic_hexagon_outline,poleColor);
-        wood_tension_below1kv_Icon = vectorToBitmap(R.drawable.ic_circle,poleColor);
-        wood_suspension_below1kv_Icon = vectorToBitmap(R.drawable.ic_circle_outline,poleColor);
-        PoleType pt = p.getPoleType();
-        if (pt == null) return null;
-
-        final String steelTension = PoleType.Material.STEEL.name() + true;
-
-        switch (pt.material().name() + pt.isTension()) {
-
-            case steelTension:
-                markerIcon = steel_tension_below1kv_Icon;
-                break;
-            case "steel / suspension":
-                markerIcon = steel_suspension_below1kv_Icon;
-                break;
-            case "concrete / tension":
-                markerIcon = concrete_tension_below1kv_Icon;
-                break;
-            case "concrete / suspension":
-                markerIcon = concrete_suspension_below1kv_Icon;
-                break;
-            case "wood / tension":
-                markerIcon = wood_tension_below1kv_Icon;
-                break;
-            case "wood / suspension":
-                markerIcon = wood_suspension_below1kv_Icon;
-                break;
-            default:
-                markerIcon = wood_suspension_below1kv_Icon;
-                break;
-
-        }
-        return markerIcon;
+    Controller (Context context){
+        this.context = context;
+        poleRepo = new RepositoryPole();
+        spanRepo = new RepositorySpan();
     }
 
-    // этот метод я украл тут https://gist.github.com/nanopc/7b693607e673c4bcafed701b5d3f54ab
-    private BitmapDescriptor vectorToBitmap(@DrawableRes int id, @ColorInt int color) {
-        Drawable vectorDrawable = ResourcesCompat.getDrawable(getResources(), id, null);
-        assert vectorDrawable != null;
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
-                                            vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+    //TODO provide icons for a collection of Poles (maybe Map<Pole, BitmapDescriptor>)
+    public BitmapDescriptor getIcon(Pole p) {
+        Map<Pair<PoleType.Material, Boolean>, BitmapDescriptor> icons = new HashMap<>();
+        int poleColor = Color.parseColor("#D81B60");
+        icons.put(new Pair(PoleType.Material.CONCRETE, Boolean.TRUE),
+                  toBitmap(context, R.drawable.ic_square, poleColor));
+        icons.put(new Pair(PoleType.Material.CONCRETE, Boolean.FALSE),
+                  toBitmap(context, R.drawable.ic_square_outline, poleColor));
+        icons.put(new Pair(PoleType.Material.STEEL, Boolean.TRUE),
+                  toBitmap(context, R.drawable.ic_hexagon, poleColor));
+        icons.put(new Pair(PoleType.Material.STEEL, Boolean.FALSE),
+                  toBitmap(context, R.drawable.ic_hexagon_outline, poleColor));
+        icons.put(new Pair(PoleType.Material.WOOD, Boolean.TRUE),
+                  toBitmap(context, R.drawable.ic_circle, poleColor));
+        icons.put(new Pair(PoleType.Material.WOOD, Boolean.FALSE),
+                  toBitmap(context, R.drawable.ic_circle_outline, poleColor));
+        PoleType pt = p.getPoleType();
+        return icons.get(new Pair(pt.material(), pt.isTension()));
+    }
+
+    // that method is from https://gist.github.com/nanopc/7b693607e673c4bcafed701b5d3f54ab
+    private BitmapDescriptor toBitmap(Context context,
+                                      @DrawableRes int id,
+                                      @ColorInt int color) {
+        Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), id, null);
+        assert drawable != null;
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                                            drawable.getIntrinsicHeight(),
+                                            Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
-        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        DrawableCompat.setTint(vectorDrawable, color);
-        vectorDrawable.draw(canvas);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        DrawableCompat.setTint(drawable, color);
+        drawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+    public List<LatLng> getCanvasToAttachConductors(float zoom, Pole p, Span... s){
+        LatLng center = new LatLng(p.getPoint().getCoordinates()[0],
+                                   p.getPoint().getCoordinates()[1]);
+
+
     }
 }

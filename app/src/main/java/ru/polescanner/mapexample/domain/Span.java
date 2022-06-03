@@ -63,4 +63,14 @@ public class Span extends Entity{
     public Pole getPole2(){
         return pole2;
     }
+
+    public Pole getOtherPole(Pole p){
+        if (isPoleIn(p))
+            return p == pole1 ? pole2 : pole1;
+        return null;
+    }
+
+    public int conductorCount() {
+        return count.getValue();
+    }
 }

@@ -25,6 +25,13 @@ public class PoleType { //Тип опоры
         this.defaultLayout = defaultLayout;
 
     }
+
+    public static PoleType registerWOLayout (String code, Material material,
+                                      boolean isTension, int conductorCount) {
+        return new PoleType(new PoleTypeCode(code), material, isTension,
+                            new ConductorCount(conductorCount), null);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

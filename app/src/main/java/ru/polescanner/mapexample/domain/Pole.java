@@ -40,12 +40,12 @@ public class Pole extends Entity{ //Опора
     public static Pole register(String poleName,
                                 int conductorCount,
                                 PoleType type,
-                                double poleLon,
                                 double poleLat,
+                                double poleLng,
                                 double poleAcc,
                                 boolean isPoleEasyAccessible
                                 ){
-        Point polePoint = new Point((float)poleLon, (float)poleLat,
+        Point polePoint = new Point((float)poleLat, (float)poleLng,
                                     (float)poleAcc, isPoleEasyAccessible);
 
         Pole p = new Pole(UUID.randomUUID(),

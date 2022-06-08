@@ -33,7 +33,7 @@ public class Span extends Entity{
         notNull(pole1.getPoint());
         notNull(pole2.getPoint());
         //TODO analyze 100m as max span
-        exclusiveBetween(0, 100, pole1.getPoint().distanceTo(pole2.getPoint()), "span length is incorrect");
+        exclusiveBetween(0, 800, pole1.getPoint().distanceTo(pole2.getPoint()), "span length is incorrect");
         Span span = new Span(UUID.randomUUID(),
                              0,
                              pole1,
@@ -66,7 +66,7 @@ public class Span extends Entity{
 
     public Pole getOtherPole(Pole p){
         if (isPoleIn(p))
-            return p == pole1 ? pole2 : pole1;
+            return p.equals(pole1) ? pole2 : pole1;
         return null;
     }
 

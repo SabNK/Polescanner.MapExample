@@ -68,13 +68,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Add a marker in Selino and move the camera
         LatLng selino = new LatLng(56.479277, 36.027601);
+        LatLng pole1 = new LatLng(56.47792, 36.022);
         LatLng pisarevsky = new LatLng(56.008401, 37.843595);
         mMap.addMarker(new MarkerOptions().position(selino).title("Welcome to Selino!"));
         //mMap.addMarker(new MarkerOptions().position(selino).title("Welcome to Office!"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selino, 16.0F));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pole1, 21.0F));
 
         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pisarevsky, 19.0F));
-        mMap.setMapType(mMap.MAP_TYPE_SATELLITE);
+        //mMap.setMapType(mMap.MAP_TYPE_SATELLITE);
         addMarkers(mMap, controller.providePoleMarkers());
         addLines(mMap, controller.providePolyLines());
 

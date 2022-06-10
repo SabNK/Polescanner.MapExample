@@ -93,6 +93,11 @@ public class PoleType { //Тип опоры
     }
 
     public enum PolePosition {
-        A, B, C, D, E, F;
+        A, B, C, D, E, F,
+        N00,  N01,  N02,  N03,  N04,  N05,
+        N10,  N11,  N12,  N13,  N14,  N15,
+        N20,  N21,  N22,  N23,  N24,  N25,
+
+        NE00, NE01, ;
     }
 }

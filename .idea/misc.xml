@@ -5,6 +5,9 @@
       <map>
         <entry key="..\:/SD/android/study/Polescanner.MapExample/app/src/main/res/layout/activity_maps.xml" value="0.24728260869565216" />
         <entry key="..\:/SD/android/study/Polescanner.MapExample/app/src/main/res/layout/activity_polygon_demo.xml" value="0.24728260869565216" />
+        <entry key="..\:/SD/android/study/Polescanner.MapExample/app/src/main/res/layout/custom_info_contents.xml" value="0.17753623188405798" />
+        <entry key="..\:/SD/android/study/Polescanner.MapExample/app/src/main/res/layout/custom_info_window.xml" value="0.17753623188405798" />
+        <entry key="..\:/SD/android/study/Polescanner.MapExample/app/src/main/res/layout/marker_demo.xml" value="0.17753623188405798" />
         <entry key="..\:/SD/polescanner/mapexample/app/src/main/res/drawable/ic_circle.xml" value="0.2935185185185185" />
         <entry key="..\:/SD/polescanner/mapexample/app/src/main/res/drawable/ic_hexagon.xml" value="0.2935185185185185" />
         <entry key="..\:/SD/polescanner/mapexample/app/src/main/res/drawable/ic_square.xml" value="0.2935185185185185" />

@@ -40,6 +40,8 @@ public class Conductor extends Entity { //Провод
         return this.alias;
     }
 
+    //ToDo Implement method
+    public Feeder getFeeder() {return null;}
 
 
 //INNER CLASSES

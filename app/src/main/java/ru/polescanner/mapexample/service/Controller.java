@@ -22,10 +22,14 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ru.polescanner.mapexample.R;
+import ru.polescanner.mapexample.domain.Conductor;
+import ru.polescanner.mapexample.domain.Feeder;
 import ru.polescanner.mapexample.domain.Pole;
 import ru.polescanner.mapexample.domain.PoleType;
 import ru.polescanner.mapexample.domain.Span;
@@ -62,12 +66,12 @@ public class Controller {
         for (Pole p : poles)
             if (p.getName().equals("ОП_2")) {
                 Log.d(TAG, "Pole " + p.getName());
-                return providePolyLines(p);
+                //return providePolyLines(p);
             }
         return null;
     }
-
-    public List<PolylineOptions> providePolyLines(Pole pole){
+/*
+    public List<PolylineOptions> providePolyLines(Pole... pole){
         List<PolylineOptions> pos = new ArrayList<>();
         List<Span> spansOfPole = new ArrayList<>();
         for (Span s : spanRepo.getAll())
@@ -77,7 +81,7 @@ public class Controller {
                 getLinesToAttachConductors(16.0f, pole, spansOfPole.toArray(new Span[0]));
         Log.d(TAG, "ConductorDraws q-ty: " + cds.size());
         for (ConductorDraw cd : cds)
-            pos.add(new PolylineOptions()
+            /*pos.add(new PolylineOptions()
                         .add(cd.endA, cd.endB)
                         .width(cd.width)
                         .color(cd.color)
@@ -85,7 +89,7 @@ public class Controller {
             );
         return pos;
     }
-
+*/
     //TODO provide icons for a collection of Poles (maybe Map<Pole, BitmapDescriptor>)
     public BitmapDescriptor getIcon(Pole p) {
         Map<Pair<PoleType.Material, Boolean>, BitmapDescriptor> icons = new HashMap<>();
@@ -147,10 +151,21 @@ public class Controller {
             int count = span.conductorCount();
             Log.d(TAG, "Conductor Count: " + count);
             LatLng otherPole = getLatLng(span.getOtherPole(p));
-            ParallelLinesProvider parLines = new ParallelLinesProvider(pole, otherPole, gapM);
+            double rectSpace = 2 * gapM;
+            ParallelLinesProvider parLines = new ParallelLinesProvider(gapM, rectSpace, pole, otherPole);
             lines.addAll(parLines.provide(count));
         }
         return lines;
+    }
+
+    public List<ConductorDraw> getLinesToShow(float zoom, Pole... p) {
+        Set<Feeder> feeders = new HashSet<>();
+        for (Pole pole : p) {
+            for (Conductor c : pole.getLayout().values()) {
+                feeders.add(c.getFeeder());
+            }
+        }
+        return null;
     }
 
     private LatLng getLatLng (Pole p){
@@ -158,114 +173,17 @@ public class Controller {
     }
 
     public static class ConductorDraw {
-        public final LatLng endA;
-        public final LatLng endB;
+        public final List<LatLng> points;
         public final int color;
         public final int width;
         public final List<PatternItem> strikePattern;
 
-        public ConductorDraw(LatLng endA, LatLng endB, int color,
-                             int width, List<PatternItem> strikePattern) {
-            this.endA = endA;
-            this.endB = endB;
+        public ConductorDraw(List<LatLng> points, int color, int width,
+                             List<PatternItem> strikePattern) {
+            this.points = points;
             this.color = color;
             this.width = width;
             this.strikePattern = strikePattern;
-        }
-    }
-
-    public static class ParallelLinesProvider{
-        private LatLng toPoint;
-        private LatLng fromPoint;
-        private double gapM;
-        private int[] colorSet;
-        private int width;
-        private List<PatternItem> strikePattern;
-        public double bearingR;
-
-        public ParallelLinesProvider(LatLng toPoint, LatLng fromPoint,
-                                     double gapM, int[] colorSet,
-                                     int width, List<PatternItem> strikePattern){
-            this.fromPoint = fromPoint;
-            this.toPoint = toPoint;
-            this.gapM = gapM;
-            this.colorSet = colorSet;
-            this.width = width;
-            this.strikePattern = strikePattern;
-            this.bearingR = bearingRadians(fromPoint, toPoint);
-        }
-
-        public ParallelLinesProvider(LatLng toPoint, LatLng fromPoint, double gapM){
-            this(toPoint, fromPoint, gapM,
-                 new int[]{Color.BLUE, Color.CYAN, Color.GREEN, Color.MAGENTA, Color.RED,
-                          Color.YELLOW, Color.GRAY, Color.WHITE},
-                 6, null);
-        }
-
-        public  List<ConductorDraw> provide(int count){
-            List<ConductorDraw> lines = new ArrayList<>();
-            LatLng[] sideLineEnds, leftSideLineEnds, rightSideLineEnds;
-            Log.d(TAG, "count on the provide input: " + count);
-            if (count%2 == 0) {
-                Log.d(TAG, "count is really 2");
-                leftSideLineEnds = new LatLng[]{stepAway(toPoint, -gapM/2),
-                                                stepAway(fromPoint, -gapM/2)};
-                rightSideLineEnds = new LatLng[]{stepAway(toPoint, gapM/2),
-                                                 stepAway(fromPoint, gapM/2)};
-                lines.add(line(leftSideLineEnds[0], leftSideLineEnds[1], 0));
-                lines.add(line(rightSideLineEnds[0], rightSideLineEnds[1], 1));
-            }
-            else {
-                sideLineEnds = new LatLng[]{toPoint, fromPoint};
-                lines.add(line(sideLineEnds[0], sideLineEnds[1], 0));
-                leftSideLineEnds = new LatLng[]{stepAwayLeft(sideLineEnds[0]),
-                                                stepAwayLeft(sideLineEnds[1])};
-                rightSideLineEnds = new LatLng[]{stepAwayRight(sideLineEnds[0]),
-                                                 stepAwayRight(sideLineEnds[1])};
-                lines.add(line(leftSideLineEnds[0], leftSideLineEnds[1], 1));
-                lines.add(line(rightSideLineEnds[0], rightSideLineEnds[1], 2));
-            }
-            for (int i = 1; i < count/2; i++){
-                leftSideLineEnds = new LatLng[]{stepAwayLeft(leftSideLineEnds[0]),
-                                                stepAwayLeft(leftSideLineEnds[1])};
-                rightSideLineEnds = new LatLng[]{stepAwayRight(rightSideLineEnds[0]),
-                                                stepAwayRight(rightSideLineEnds[1])};
-                lines.add(line(leftSideLineEnds[0], leftSideLineEnds[1], 2*i + count%2));
-                lines.add(line(rightSideLineEnds[0], rightSideLineEnds[1], 2*i + 1 + count%2));
-            }
-            Log.d(TAG, "provider gives lines: " + lines.size());
-            return lines;
-        }
-
-        private ConductorDraw line(LatLng endA, LatLng endB, int index){
-            return new ConductorDraw(endA, endB, colorSet[index], width, strikePattern);
-        }
-        //ToDo Refactor to rename stepAwaySouth
-        private LatLng stepAwayRight(LatLng point){
-            return stepAway(point, gapM);
-        }
-        //ToDo Refactor to rename stepAwayNorth
-        private LatLng stepAwayLeft(LatLng point){
-            return stepAway(point, -gapM);
-        }
-
-        public LatLng stepAway(LatLng point, double gapM){
-            //https://v-ipc.ru/guides/coord
-            double degreeLngM = 111134.861111;
-            double degreeLatM = Math.cos(Math.toRadians(point.latitude))*111321.377778;
-            double latDeltaD = gapM*Math.sin(bearingR)/degreeLatM;
-            double lngDeltaD = gapM*Math.cos(bearingR)/degreeLngM;
-            return new LatLng(point.latitude - latDeltaD, point.longitude + lngDeltaD);
-        }
-
-        public static double bearingRadians(LatLng start, LatLng end){
-            double sLatR = Math.toRadians(start.latitude);
-            double eLatR = Math.toRadians(end.latitude);
-            double lngDiff= Math.toRadians(end.longitude - start.longitude);
-            double y = Math.sin(lngDiff)*Math.cos(eLatR);
-            double x = Math.cos(sLatR)*Math.sin(eLatR)
-                    - Math.sin(sLatR)*Math.cos(eLatR)*Math.cos(lngDiff);
-            return Math.atan2(y, x);
         }
     }
 

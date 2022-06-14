@@ -78,6 +78,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //mMap.setMapType(mMap.MAP_TYPE_SATELLITE);
         addMarkers(mMap, controller.providePoleMarkers());
         addLines(mMap, controller.providePolyLines());
+        /* Прокрутка экрана - подзагрузка
+
+
+        mMap.setOnCameraMoveStartedListener() { reasonCode ->
+            if (reasonCode == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+                // I will no longer keep updating the camera location because
+                // the user interacted with it. This is my field I check before
+                // snapping the camera location to the latest value.
+                tracking = false
+            }
+        }
+        */
+
 
     }
 

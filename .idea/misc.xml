@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/SD/Git/Polescanner.MapExample/app/src/main/res/layout/activity_maps.xml" value="0.14130434782608695" />
+        <entry key="..\:/SD/Git/Polescanner.MapExample/app/src/main/res/layout/activity_polygon_demo.xml" value="0.14130434782608695" />
         <entry key="..\:/SD/android/study/Polescanner.MapExample/app/src/main/res/layout/activity_maps.xml" value="0.24728260869565216" />
         <entry key="..\:/SD/android/study/Polescanner.MapExample/app/src/main/res/layout/activity_polygon_demo.xml" value="0.24728260869565216" />
         <entry key="..\:/SD/polescanner/mapexample/app/src/main/res/drawable/ic_circle.xml" value="0.2935185185185185" />
